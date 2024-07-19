@@ -1,13 +1,13 @@
 import { config } from "dotenv";
 import { connect } from "mongoose";
-import app from "./app"  // Ensure this path is correct
+import app from "./app"; // Ensure this path is correct
 
 process.on("uncaughtException", (err) => {
   console.error("Uncaught Exception:", err);
   process.exit(1);
 });
 
-config({ path: "./.env" });
+config({ path: "./.env.local" });
 
 const port = process.env.PORT || 3000;
 
