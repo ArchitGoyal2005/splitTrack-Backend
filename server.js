@@ -1,46 +1,30 @@
-import { config } from "dotenv";
-import { connect } from "mongoose";
-import app from "./app"; // Ensure this path is correct
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import app from "./app.js";
 
 process.on("uncaughtException", (err) => {
-  console.error("Uncaught Exception:", err);
+  console.log(err.name, err.message);
+  console.log("Unhandled Exception!");
   process.exit(1);
 });
 
-config({ path: "./.env.local" });
+dotenv.config({ path: "./.env.local" });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
+const dbUrl = process.env.DB_URI.replace("<password>", process.env.DB_PASS);
 
-const dbUri = process.env.DB_URI;
-const dbPass = process.env.DB_PASS;
-
-if (!dbUri || !dbPass) {
-  console.error(
-    "DB_URI and DB_PASS must be defined in the environment variables"
-  );
-  process.exit(1);
-}
-
-const dbUrl = dbUri.replace("<password>", dbPass);
-
-connect(dbUrl)
-  .then(() => {
-    console.log("Database is running");
-  })
-  .catch((err) => {
-    console.error("Database connection error:", err);
-    process.exit(1);
-  });
+mongoose.connect(dbUrl).then(() => {
+  console.log("Database is running");
+});
 
 const server = app.listen(port, () => {
-  console.log("Server is running on the port", port);
+  console.log("Server is running on the port ", port);
 });
 
 process.on("unhandledRejection", (err) => {
-  console.error("Unhandled Rejection:", err);
+  console.log(err.name, err.message);
+  console.log("Unhandled Rejection!");
   server.close(() => {
     process.exit(1);
   });
 });
-
-//test commit
